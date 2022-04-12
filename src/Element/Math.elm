@@ -32,7 +32,7 @@ type MathExpr
     | ReductionRule String MathExpr MathExpr
     | ApplyTo MathExpr MathExpr
     | SpacedExprs (List MathExpr)
-    | Contains MathExpr MathExpr
+    | ContainedBy MathExpr MathExpr
 
 
 type alias ColorScheme =
@@ -96,9 +96,9 @@ pars =
     Pars
 
 
-contains : MathExpr -> MathExpr -> MathExpr
-contains =
-    Contains
+containedBy : MathExpr -> MathExpr -> MathExpr
+containedBy =
+    ContainedBy
 
 
 ifix : MathExpr -> MathExpr -> MathExpr
@@ -439,7 +439,7 @@ render size color expr =
                     |> List.intersperse (el [ El.width <| El.px <| round <| size * 1.8 ] El.none)
                     |> El.row []
 
-            Contains b a ->
+            ContainedBy a b ->
                 El.row [] [ render size color a, El.text ",", render size color b ]
 
 
@@ -461,7 +461,7 @@ forAll v k e =
     ExprList
         [ Op all
         , v |> ofKind k
-        , Op arrow
+        , Op "⸳"
         , e
         ]
 
