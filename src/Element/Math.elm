@@ -30,7 +30,7 @@ type MathExpr
     | Pars MathExpr
     | Lam MathExpr MathExpr
     | ReductionRule String MathExpr MathExpr
-    | Apply MathExpr MathExpr
+    | ApplyTo MathExpr MathExpr
     | SpacedExprs (List MathExpr)
     | Contains MathExpr MathExpr
 
@@ -50,6 +50,84 @@ type alias ColorScheme =
     , reductionRule : El.Color
     , replace : El.Color
     }
+
+
+
+-- Ast Generating Functions --
+
+
+kindNamed : String -> MathExpr
+kindNamed =
+    KVar
+
+
+ofKind : MathExpr -> MathExpr -> MathExpr
+ofKind =
+    OfKind
+
+
+tyVar : String -> MathExpr
+tyVar =
+    TyVar
+
+
+elementOf : MathExpr -> MathExpr -> MathExpr
+elementOf b a =
+    ExprList [ a, Op isIn, b ]
+
+
+reductionRule : String -> MathExpr -> MathExpr -> MathExpr
+reductionRule =
+    ReductionRule
+
+
+kindStar : MathExpr
+kindStar =
+    Op star
+
+
+typeNamed : String -> MathExpr
+typeNamed =
+    TyVar
+
+
+pars : MathExpr -> MathExpr
+pars =
+    Pars
+
+
+contains : MathExpr -> MathExpr -> MathExpr
+contains =
+    Contains
+
+
+ifix : MathExpr -> MathExpr -> MathExpr
+ifix a b =
+    Pars <| ExprList [ Op "ifix", a, b ]
+
+
+fun : MathExpr -> MathExpr -> MathExpr
+fun a b =
+    Pars <| ExprList [ a, Op arrow, b ]
+
+
+var : String -> MathExpr
+var =
+    Var
+
+
+exprList : List MathExpr -> MathExpr
+exprList =
+    SpacedExprs
+
+
+impliedBy : MathExpr -> MathExpr -> MathExpr
+impliedBy a b =
+    ExprList [ a, Op turnStile, b ]
+
+
+
+-- Reduce and Render --
 
 
 reduce : MathExpr -> MathExpr
@@ -132,7 +210,7 @@ render size color expr =
             Op o ->
                 el [ Font.color color.op ] <| El.text o
 
-            Exp b e ->
+            Exp e b ->
                 El.row
                     [ El.centerX
                     , El.centerY
@@ -149,7 +227,7 @@ render size color expr =
                         render (size * 0.75) color e
                     ]
 
-            Sub b s ->
+            Sub s b ->
                 El.row
                     [ El.centerX
                     , El.centerY
@@ -165,7 +243,7 @@ render size color expr =
                         render (size * 0.75) color s
                     ]
 
-            ExpSub b e s ->
+            ExpSub e s b ->
                 El.row
                     [ El.centerX
                     , El.centerY
@@ -323,7 +401,7 @@ render size color expr =
                     , el [ color.frac |> changeAlpha 0 |> Font.color ] <| El.text name
                     ]
 
-            Apply a b ->
+            ApplyTo a b ->
                 El.row []
                     [ el
                         [ El.width <| El.px <| round <| size * 0.35
@@ -361,7 +439,7 @@ render size color expr =
                     |> List.intersperse (el [ El.width <| El.px <| round <| size * 1.8 ] El.none)
                     |> El.row []
 
-            Contains a b ->
+            Contains b a ->
                 El.row [] [ render size color a, El.text ",", render size color b ]
 
 
@@ -376,6 +454,26 @@ render size color expr =
 nat : String
 nat =
     "ℕ"
+
+
+forAll : MathExpr -> MathExpr -> MathExpr -> MathExpr
+forAll v k e =
+    ExprList
+        [ Op all
+        , v |> ofKind k
+        , Op arrow
+        , e
+        ]
+
+
+all : String
+all =
+    "∀"
+
+
+thereExists : String
+thereExists =
+    "∃"
 
 
 rangeRestriction : String
@@ -398,9 +496,9 @@ lambda =
     "λ"
 
 
-context : String
+context : MathExpr
 context =
-    "Γ"
+    Op "Γ"
 
 
 dot : String
@@ -424,8 +522,8 @@ arrow =
     "⟶"
 
 
-implies : String
-implies =
+turnStile : String
+turnStile =
     "⊢"
 
 
