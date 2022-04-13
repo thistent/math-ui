@@ -148,8 +148,8 @@ render size color expr =
     el
         [ Font.size <| round size
         , Font.regular
-
-        --, Font.italic
+        , Font.italic
+        , El.centerX
         ]
     <|
         case reduce expr of
