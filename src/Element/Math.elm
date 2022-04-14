@@ -201,7 +201,8 @@ render size color expr =
                 El.row
                     [ El.centerX
                     , El.centerY
-                    , El.padding <| round <| size * 0.1
+
+                    --, El.padding <| round <| size * 0.1
                     , El.spacing <| round <| size * 0.5
                     ]
                 <|
@@ -316,22 +317,32 @@ render size color expr =
                     ]
 
             Pars exp ->
-                el
-                    [ El.paddingEach
-                        { edges
-                            | left = round <| size * 0.3
-                            , right = round <| size * 0.3
-                            , top = round <| size * 0.2
-                            , bottom = round <| size * 0.2
-                        }
-                    , Border.widthEach { edges | left = round <| size * 0.1, right = round <| size * 0.1 }
-                    , Border.rounded <| round <| size * 1.25
-                    , color.pars |> changeAlpha 0.3 |> Border.color -- El.rgba 0.5 0.5 0.5 0.25
-                    , color.pars |> changeAlpha 0.05 |> Bg.color -- El.rgba 0.5 0.5 0.5 0.1
-                    ]
-                <|
-                    --el [ El.moveUp <| size * 0.075 ] <|
-                    render (size * 0.98) color exp
+                el [ El.paddingXY (round <| size * 0.15) 0 ] <|
+                    el
+                        [ El.paddingEach
+                            { edges
+                                | left = round <| size * 0.3
+                                , right = round <| size * 0.35
+                                , top = round <| size * 0.25
+                                , bottom = round <| size * 0.3
+                            }
+                        , Border.widthEach
+                            { edges
+                                | left = round <| size * 0.1
+                                , right = round <| size * 0.1
+                            }
+                        , Border.roundEach
+                            { topLeft = round <| size * 1.5
+                            , topRight = round <| size * 1.15
+                            , bottomLeft = round <| size * 1.15
+                            , bottomRight = round <| size * 1.5
+                            }
+                        , color.pars |> changeAlpha 0.3 |> Border.color -- El.rgba 0.5 0.5 0.5 0.25
+                        , color.pars |> changeAlpha 0.05 |> Bg.color -- El.rgba 0.5 0.5 0.5 0.1
+                        ]
+                    <|
+                        --el [ El.moveUp <| size * 0.075 ] <|
+                        render (size * 0.98) color exp
 
             Lam v b ->
                 El.row [ Font.color color.lam ]
@@ -398,7 +409,8 @@ render size color expr =
                           <|
                             render (size * 0.95) color d
                         ]
-                    , el [ color.frac |> changeAlpha 0 |> Font.color ] <| El.text name
+
+                    --, el [ color.frac |> changeAlpha 0 |> Font.color ] <| El.text name
                     ]
 
             ApplyTo a b ->
