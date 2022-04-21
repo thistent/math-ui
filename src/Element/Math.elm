@@ -321,8 +321,8 @@ render size color expr =
                     el
                         [ El.paddingEach
                             { edges
-                                | left = round <| size * 0.3
-                                , right = round <| size * 0.35
+                                | left = round <| size * 0.4
+                                , right = round <| size * 0.5
                                 , top = round <| size * 0.25
                                 , bottom = round <| size * 0.3
                             }
