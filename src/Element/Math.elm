@@ -1,4 +1,25 @@
-module Element.Math exposing (..)
+module Element.Math exposing
+    ( ColorScheme
+    , MathExpr
+    , alpha
+    , changeAlpha
+    , containedBy
+    , context
+    , elementOf
+    , exprList
+    , forAll
+    , fun
+    , ifix
+    , impliedBy
+    , kindNamed
+    , kindStar
+    , ofKind
+    , pars
+    , reductionRule
+    , render
+    , typeNamed
+    , var
+    )
 
 -- import Html.Attributes exposing (id, style)
 
@@ -7,11 +28,6 @@ import Element.Background as Bg
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
-
-
-
---import Element.Math.Attribute as MA
---import Element.Math.Internal.Model as Internal
 
 
 type MathExpr
@@ -50,80 +66,6 @@ type alias ColorScheme =
     , reductionRule : El.Color
     , replace : El.Color
     }
-
-
-
--- Ast Generating Functions --
-
-
-kindNamed : String -> MathExpr
-kindNamed =
-    KVar
-
-
-ofKind : MathExpr -> MathExpr -> MathExpr
-ofKind =
-    OfKind
-
-
-tyVar : String -> MathExpr
-tyVar =
-    TyVar
-
-
-elementOf : MathExpr -> MathExpr -> MathExpr
-elementOf b a =
-    ExprList [ a, Op isIn, b ]
-
-
-reductionRule : String -> MathExpr -> MathExpr -> MathExpr
-reductionRule =
-    ReductionRule
-
-
-kindStar : MathExpr
-kindStar =
-    Op star
-
-
-typeNamed : String -> MathExpr
-typeNamed =
-    TyVar
-
-
-pars : MathExpr -> MathExpr
-pars =
-    Pars
-
-
-containedBy : MathExpr -> MathExpr -> MathExpr
-containedBy =
-    ContainedBy
-
-
-ifix : MathExpr -> MathExpr -> MathExpr
-ifix a b =
-    Pars <| ExprList [ Op "ifix", a, b ]
-
-
-fun : MathExpr -> MathExpr -> MathExpr
-fun a b =
-    Pars <| ExprList [ a, Op arrow, b ]
-
-
-var : String -> MathExpr
-var =
-    Var
-
-
-exprList : List MathExpr -> MathExpr
-exprList =
-    SpacedExprs
-
-
-impliedBy : MathExpr -> MathExpr -> MathExpr
-impliedBy a b =
-    ExprList [ a, Op turnStile, b ]
 
 
 
@@ -337,8 +279,12 @@ render size color expr =
                             , bottomLeft = round <| size * 1.15
                             , bottomRight = round <| size * 1.5
                             }
-                        , color.pars |> changeAlpha 0.3 |> Border.color -- El.rgba 0.5 0.5 0.5 0.25
-                        , color.pars |> changeAlpha 0.05 |> Bg.color -- El.rgba 0.5 0.5 0.5 0.1
+                        , color.pars |> changeAlpha 0.3 |> Border.color
+
+                        -- El.rgba 0.5 0.5 0.5 0.25
+                        , color.pars |> changeAlpha 0.05 |> Bg.color
+
+                        -- El.rgba 0.5 0.5 0.5 0.1
                         ]
                     <|
                         --el [ El.moveUp <| size * 0.075 ] <|
@@ -348,7 +294,12 @@ render size color expr =
                 El.row [ Font.color color.lam ]
                     [ el [ El.padding <| round <| size * 0.2 ] <| El.text lambda
                     , render size color v
-                    , el [ El.padding <| round <| size * 0.2, El.moveRight <| size * 0.1 ] <| El.text "⟶"
+                    , el
+                        [ El.padding <| round <| size * 0.2
+                        , El.moveRight <| size * 0.1
+                        ]
+                      <|
+                        El.text "⟶"
                     , render size color b
                     ]
 
@@ -409,8 +360,6 @@ render size color expr =
                           <|
                             render (size * 0.95) color d
                         ]
-
-                    --, el [ color.frac |> changeAlpha 0 |> Font.color ] <| El.text name
                     ]
 
             ApplyTo a b ->
@@ -418,9 +367,18 @@ render size color expr =
                     [ el
                         [ El.width <| El.px <| round <| size * 0.35
                         , El.height El.fill
-                        , Border.widthEach { edges | top = 2, bottom = 2, left = 2 }
-                        , color.pars |> changeAlpha 0.3 |> Border.color -- El.rgba 0.5 0.5 0.5 0.25
-                        , color.pars |> changeAlpha 0.05 |> Bg.color -- El.rgba 0.5 0.5 0.5 0.1
+                        , Border.widthEach
+                            { edges
+                                | top = 2
+                                , bottom = 2
+                                , left = 2
+                            }
+                        , color.pars |> changeAlpha 0.3 |> Border.color
+
+                        -- El.rgba 0.5 0.5 0.5 0.25
+                        , color.pars |> changeAlpha 0.05 |> Bg.color
+
+                        -- El.rgba 0.5 0.5 0.5 0.1
                         ]
                         El.none
                     , el
@@ -431,28 +389,132 @@ render size color expr =
                                 , left = round <| size * 0.2
                                 , right = round <| size * 0.2
                             }
-                        , color.pars |> changeAlpha 0.3 |> Border.color -- El.rgba 0.5 0.5 0.5 0.25
-                        , color.pars |> changeAlpha 0.05 |> Bg.color -- El.rgba 0.5 0.5 0.5 0.1
+                        , color.pars |> changeAlpha 0.3 |> Border.color
+
+                        -- El.rgba 0.5 0.5 0.5 0.25
+                        , color.pars |> changeAlpha 0.05 |> Bg.color
+
+                        -- El.rgba 0.5 0.5 0.5 0.1
                         ]
                       <|
-                        El.row [ El.spacing <| round <| size * 0.1 ] [ render (size * 0.98) color a, render (size * 0.98) color b ]
+                        El.row
+                            [ El.spacing <| round <| size * 0.1 ]
+                            [ render (size * 0.98) color a
+                            , render (size * 0.98) color b
+                            ]
                     , el
                         [ El.width <| El.px <| round <| size * 0.35
                         , El.height El.fill
                         , Border.widthEach { edges | top = 2, bottom = 2, right = 2 }
-                        , color.pars |> changeAlpha 0.3 |> Border.color -- El.rgba 0.5 0.5 0.5 0.25
-                        , color.pars |> changeAlpha 0.05 |> Bg.color -- El.rgba 0.5 0.5 0.5 0.1
+                        , color.pars |> changeAlpha 0.3 |> Border.color
+
+                        -- El.rgba 0.5 0.5 0.5 0.25
+                        , color.pars |> changeAlpha 0.05 |> Bg.color
+
+                        -- El.rgba 0.5 0.5 0.5 0.1
                         ]
                         El.none
                     ]
 
             SpacedExprs ls ->
                 List.map (render size color) ls
-                    |> List.intersperse (el [ El.width <| El.px <| round <| size * 1.8 ] El.none)
+                    |> List.intersperse
+                        (el
+                            [ El.width <| El.px <| round <| size * 1.8 ]
+                            El.none
+                        )
                     |> El.row []
 
             ContainedBy a b ->
-                El.row [] [ render size color a, El.text ",", render size color b ]
+                El.row []
+                    [ render size color a
+                    , El.text ","
+                    , render size color b
+                    ]
+
+
+
+-- Ast Generating Functions --
+
+
+kindNamed : String -> MathExpr
+kindNamed =
+    KVar
+
+
+ofKind : MathExpr -> MathExpr -> MathExpr
+ofKind =
+    OfKind
+
+
+tyVar : String -> MathExpr
+tyVar =
+    TyVar
+
+
+elementOf : MathExpr -> MathExpr -> MathExpr
+elementOf b a =
+    ExprList [ a, Op isIn, b ]
+
+
+reductionRule : String -> MathExpr -> MathExpr -> MathExpr
+reductionRule =
+    ReductionRule
+
+
+kindStar : MathExpr
+kindStar =
+    Op star
+
+
+typeNamed : String -> MathExpr
+typeNamed =
+    TyVar
+
+
+pars : MathExpr -> MathExpr
+pars =
+    Pars
+
+
+containedBy : MathExpr -> MathExpr -> MathExpr
+containedBy =
+    ContainedBy
+
+
+ifix : MathExpr -> MathExpr -> MathExpr
+ifix a b =
+    Pars <| ExprList [ Op "ifix", a, b ]
+
+
+fun : MathExpr -> MathExpr -> MathExpr
+fun a b =
+    Pars <| ExprList [ a, Op arrow, b ]
+
+
+var : String -> MathExpr
+var =
+    Var
+
+
+exprList : List MathExpr -> MathExpr
+exprList =
+    SpacedExprs
+
+
+impliedBy : MathExpr -> MathExpr -> MathExpr
+impliedBy a b =
+    ExprList [ a, Op turnStile, b ]
+
+
+forAll : MathExpr -> MathExpr -> MathExpr -> MathExpr
+forAll v k e =
+    ExprList
+        [ Op all
+        , v |> ofKind k
+        , Op "⸳"
+        , e
+        ]
 
 
 
@@ -466,16 +528,6 @@ render size color expr =
 nat : String
 nat =
     "ℕ"
-
-
-forAll : MathExpr -> MathExpr -> MathExpr -> MathExpr
-forAll v k e =
-    ExprList
-        [ Op all
-        , v |> ofKind k
-        , Op "⸳"
-        , e
-        ]
 
 
 all : String
