@@ -340,6 +340,7 @@ render size color expr =
                                 el
                                     [ Font.unitalicized
                                     , Font.bold
+                                    , Font.color color.reductionRule
                                     , El.moveUp <| size * 0.6
                                     , El.moveRight <| size * 0.25
                                     ]
@@ -428,7 +429,7 @@ render size color expr =
             ContainedBy a b ->
                 El.row []
                     [ render size color a
-                    , El.text ","
+                    , el [ Font.color color.op ] <| El.text ","
                     , render size color b
                     ]
 
