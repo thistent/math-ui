@@ -266,7 +266,7 @@ render size color expr =
                                 | left = round <| size * 0.4
                                 , right = round <| size * 0.5
                                 , top = round <| size * 0.25
-                                , bottom = round <| size * 0.3
+                                , bottom = round <| size * 0.1
                             }
                         , Border.widthEach
                             { edges
